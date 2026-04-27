@@ -25,9 +25,9 @@ Methodology: each window trains on its own segment, validates on the next, tests
 
 **Important caveat.** These numbers reflect look-ahead bias on the LLM layer that walk-forward does not protect against. The underlying model's weights are genuinely out-of-sample for each test segment, but the prompts, taxonomy, gating threshold, and macro context corpus were all designed with knowledge of which windows needed intervention. Treat the headline number as an *upper bound* on what live trading would produce, not a forecast. See [`docs/04-self-deception.md`](docs/04-self-deception.md). I'm running paper trading now; that's the first real OOS test.
 
-## The four lessons
+## What I learned
 
-I already knew how to build the deep-learning piece — the techniques are well documented elsewhere. The new ground was figuring out where an LLM helps and where it doesn't. Four findings stood out, each written up in its own doc.
+I already knew how to build the deep-learning piece — the techniques are well documented elsewhere. The new ground was figuring out where an LLM helps and where it doesn't. Four findings stood out, plus a structured list of what I tried and cut:
 
 1. **[When LLMs help quant](docs/01-when-llms-help-quant.md)** — A typology of where an LLM is and isn't useful in a trading pipeline. Short version: not for picking instruments, sometimes for classifying regimes.
 
@@ -36,6 +36,8 @@ I already knew how to build the deep-learning piece — the techniques are well 
 3. **[IC is a lying compass](docs/03-ic-is-a-lying-compass.md)** — The Information Coefficient is the standard factor-evaluation metric. For my strategy, it correlated almost zero with realized P&L. Two of my best periods had near-zero IC; one of my worst had positive IC.
 
 4. **[Self-deception with an LLM in the loop](docs/04-self-deception.md)** — Walk-forward backtesting protects you from look-ahead bias on model weights. It does not protect you from look-ahead bias on the prompts you wrote, the taxonomy you defined, or the gate threshold you tuned. Uncomfortable to admit; worth saying out loud.
+
+5. **[Dead ends](docs/05-dead-ends.md)** — A structured list of what I tried and cut. Defensive responses to alpha failure that didn't help, detection signals that misled, LLM uses that didn't work, model and feature choices that underperformed. The negative results are often more transferable than the positive ones.
 
 ## Why no code
 
