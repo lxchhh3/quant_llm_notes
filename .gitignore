@@ -1,0 +1,8 @@
+_drafts/
+.DS_Store
+*.swp
+*.swo
+node_modules/
+.idea/
+.vscode/
+__pycache__/
