@@ -53,7 +53,7 @@ If you're building a similar system, the docs are written so you can implement y
 
 I'm publishing some of this material in narrative form on Substack — same ideas, more storytelling, less reference-doc structure.
 
-- [The compass that lied to me](https://kevinlee412770.substack.com/p/1) — on why the Information Coefficient mostly didn't correlate with my strategy's P&L
+- [The compass that lied to me](https://kevinlee412770.substack.com/p/60c) — on why the Information Coefficient mostly didn't correlate with my strategy's P&L
 
 ## About
 
