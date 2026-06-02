@@ -14,6 +14,8 @@ This repo documents the design and lessons from an LLM-augmented stat-arb system
 - The macro context corpus passed to the LLM
 - Cost and turnover assumptions
 - Production code
+- Live trading results — specific P&L, drawdown figures, dates, and account details
+- The re-grounded performance numbers from the data/universe correction. That re-validation is a work in progress; I'd rather publish a settled number once than dribble out figures that are still moving. The writeup now describes performance qualitatively for this reason
 
 ## Why
 

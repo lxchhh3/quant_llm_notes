@@ -34,9 +34,9 @@ The headline performance of my system is real in the sense that the underlying m
 - The LLM layer's incremental contribution is approximately in-sample.
 - The total system performance is somewhere in between, weighted by how much of the result comes from the LLM layer (which in my case was a lot).
 
-Concretely: the underlying model alone returned about +7.9% annualized over the walk-forward set. The full system with the LLM layer returned about +31.4%. The first number is genuinely OOS for the model weights. The second number is OOS for the model weights but in-sample for the LLM layer's design. The truthful read is: *the underlying model produces ~8% OOS, plus an unknown amount from the LLM layer that I'm currently estimating at ~+23 percentage points, but which is statistically in-sample*. Live trading is what discounts that +23pp toward its true value. I would not be surprised if the live LLM-layer contribution is half of that, or less.
+Concretely: the underlying model alone produced a modest single-digit annualized return over the walk-forward set. The full system, with the LLM layer, reported several times that. The first number is genuinely OOS for the model weights. The second is OOS for the weights but in-sample for the LLM layer's design — most of the headline came from the part of the system that had seen the answers. The truthful read: the model produces a small real edge, plus a much larger increment from the LLM layer that is statistically in-sample and will discount toward its true value the moment it meets data it hasn't seen. I would not be surprised if the live contribution is a fraction of the backtest's.
 
-The small caveat on the model itself: its hyperparameters were chosen using a tuning run on a subset of the same windows I later evaluated on. So even the +7.9% has mild hyperparameter look-ahead. This is much smaller than the LLM-layer issue, but it's not zero.
+The small caveat on the model itself: its hyperparameters were chosen using a tuning run on a subset of the same windows I later evaluated on. So even that small edge carries mild hyperparameter look-ahead. This is much smaller than the LLM-layer issue, but it's not zero.
 
 ## What to do about it
 
@@ -59,3 +59,20 @@ The tradeoff I'm making by saying this is: a smaller, less impressive-sounding r
 ## The minimal version
 
 If you remember one thing: walk-forward protects model weights, not prompts, taxonomies, gating thresholds, or anything else you tuned by looking at the walk-forward results. If your LLM layer was iterated against the same windows you're reporting numbers on, the LLM-layer numbers are in-sample. Say so.
+
+## Update: the live test came back
+
+I ended the original version of this doc saying that live trading would be the first honest out-of-sample test of the LLM layer, and that I expected it to discount the backtest. It came back. Two things happened, both more humbling than I'd braced for.
+
+First, it discounted hard. The system spent its first live month in a drawdown — a double-digit one — in a market that had not crashed. Direction as predicted; magnitude worse than I'd hoped. The ceiling was a ceiling.
+
+Second, and more instructive: the live test wasn't even clean, and neither was the backtest I'd been comparing it against.
+
+- The protective gate was silently broken for the entire live month (see [doc 02](02-gating-llm-calls.md)), so "live" was never testing the system I designed — it was testing the model alone, stripped of its safety layer, plus execution friction the backtest had assumed away.
+- When I went back to re-examine the backtest itself, the data and the universe underneath it were both wrong (see [doc 06](06-ground-the-foundation.md)). The number I'd published as an honest "ceiling" had been computed on a foundation that didn't hold.
+
+So the real shape of my self-deception was worse than this doc originally confessed. I'd owned up to one layer — look-ahead bias on the LLM-layer design. Underneath it sat two more layers I hadn't even suspected: broken data, and a deployed model that wasn't the one I'd validated. **Self-deception isn't a single error you confess once and clear. It's layered. Every level you've validated can be sitting on a level you haven't.**
+
+What I actually believe now, having ground the foundation and watched the live tape: the picker has a modest, real edge, strongest in the most recent regime. Most of the original headline was foundation, look-ahead, and frictionless assumptions — not alpha. That is a much smaller claim, and a much truer one, and I'm more confident in it than I ever was in the big number.
+
+I've kept this doc's original argument intact — I've only stripped the specific backtest figures it once quoted, because doc 06 is why I no longer trust them. Editing the *reasoning* to look prescient would be precisely the failure mode this doc is about; removing numbers I've since learned were measured on bad ground is just honesty catching up.

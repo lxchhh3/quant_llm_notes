@@ -48,6 +48,18 @@ Covered in detail in [doc 01](01-when-llms-help-quant.md). Briefly:
 
 **A different market segment within the same universe family.** Tested with the same architecture; underperformed. The market choice matters independently of the model — it's not a hyperparameter you can transfer.
 
+## Added after going live
+
+The entries above came out of backtesting. These came out of live trading and the re-grounding that followed it — a different, and more expensive, way to learn what doesn't work.
+
+**Rank-ordering losses and rerankers, to sharpen top-of-book selection.** A whole family — pairwise and listwise ranking objectives, a two-stage reranker, even a reasoning model used as a reranker with hindsight — all lost badly to a plain calibrated point predictor. A ranking loss optimizes a single-period ordering; a strategy that holds positions for multiple periods realizes a different horizon, and on this data the two were anti-aligned. Detail in [doc 07](07-the-bottleneck-wasnt-the-model.md). Don't iterate on the loss; fix the label horizon.
+
+**Variance-reduction position sizing, on a strong model.** Down-weighting the more volatile names beat equal weighting — on an earlier, weaker model. On the stronger model it lost, because the volatile names were where the upside lived. The old result was a weak-model artifact that didn't transfer. The general trap — a fix that rescues a weak model can sink a strong one — is in [doc 07](07-the-bottleneck-wasnt-the-model.md).
+
+**Reactive de-risking on V-shaped recoveries.** Cutting exposure after a sharp drop and restoring it after the bounce is, arithmetically, pure cost: you sell low and rebuy high, and the more decisively you do it the more you lose. In a market with a strong reflexive backstop — where sharp drops tend to get bought back fast — this is net-negative in the common case. Reactive crash protection only earns its keep on the rare cascade that *keeps* falling; it cannot be evaluated, or tuned, on the V-shaped events that dominate the sample. Judge it on a V and you'll make a reckless rule look fine and a careful one look useless.
+
+**An LLM middle layer fed macro narrative.** Separately from the stock-picking failures in [doc 01](01-when-llms-help-quant.md), I tried inserting an LLM *between* the model's scores and the portfolio, giving it a clean, point-in-time macro read and letting it tilt the book. Fed honest non-hindsight macro context, it applied essentially no useful tilts — net contribution indistinguishable from zero. The only thing left genuinely untested is per-name information the model literally cannot see (company-specific news, corporate actions), which needs a data feed I haven't built. Macro narrative alone, as a re-weighting input, is not it.
+
 ## What this list isn't
 
 This isn't every dead end. The internal version contains experiments that were specific enough to the underlying data that summarizing them would either leak the system or mislead readers about what the result *means*. The cuts above are the ones whose lessons generalize.

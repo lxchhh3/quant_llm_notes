@@ -53,3 +53,17 @@ None of these are interesting algorithmic ideas. They're all "details you have t
 ## What this isn't
 
 This isn't a circuit breaker for risk management. A risk circuit breaker stops trading when losses exceed a threshold. The gate is upstream of that — it's about deciding when to consult a slow advisor, not about cutting exposure when something has gone wrong. You probably want both.
+
+## Postscript: what happened when it went live
+
+I shipped this design. For the entire first month of live paper trading, the gate never opened once — and the portfolio bled the whole time, in a market that hadn't crashed.
+
+The gate wasn't disagreeing with me. It was broken. The live path made a timing assumption the backtest never had to: it tried to read a return that wasn't materialized yet at the time of day the live job ran. That raised an error; the error was swallowed inside a per-day loop; the failure-detection fell through to "not enough history"; and the function returned "model is fine" — silently, every single session. The one component the whole design rests on was effectively absent, and nothing in the logs said so.
+
+Three lessons fell out of this, and they're worth more than the original design:
+
+- **A gate that fails silently fails to "everything is fine."** That's the most dangerous possible default — the failure is invisible *and* it disables your protection exactly when you can't see it. If a check can't be computed, it should fail loud, not fall through to the benign answer.
+- **Log the verdict every time, including the no-op.** A line that says "gate closed, model healthy" on every quiet day is what tells you the gate is alive. Its *absence* is the only thing that would have caught this, and I wasn't emitting it. Silence read as health.
+- **Test the live path, not just the backtest path.** The bug lived entirely in a timing assumption that the backtest — which has all the data available at once — could never exercise. The backtest and the live loop are different programs; the gate has to be tested in the one that actually runs.
+
+The irony isn't lost on me. This doc argues the gate matters more than the LLM. Live trading proved it by removing the gate involuntarily and letting me watch what the system does without it. It bleeds. The gate was doing the work, exactly as claimed — I just got to confirm it in the most expensive way.
